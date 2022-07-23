@@ -255,3 +255,42 @@ val x = y+1; x*x
 ```
 
 ## Tail Recursion
+
+Recursion is a fundamental for functionall programming. Recursion are very similar to loops, especially the Tail Recursion
+
+Whenever one evaluates a function application f(e1, ..., en), it uses **substitution**:
+    1. Evaluates the expressions (e1, e2, ...) resulting in values (v1, v2, ...)
+    2. Replace the application with the body of function f
+    3. Replace the formal parameters of f with the calculated values in 1
+
+For example, Euclid's algorithm for calculating greatest common divisor:
+
+```
+def gcd(a: Int, b: Int):Int = 
+    if b==0 then a else gcd(b, a%b)
+```
+
+`%` is called modulo and returns the integer remainder of division
+
+Another example of tail recursion is factorial:
+
+```
+def factorial(n:Int): Int = 
+    if n==0 then 1 else n*factorial(n-1)
+```
+
+The gcd function follows a **straigh path (chain of if and elses)**, while the factorial will result in **deeper and deeper nesting**. This is because in gcd the **last call is the function itself**, while factorial call the **function plus an additional operation (n*)** 
+
+So we have the definition of Tail Recursion:
+
+**Tail Recursion**: if a function calls itself as its last action, the function's stack frame can be reused, it's a iterative process. It can be ensured/optimized in scala by adding a @tailrec before the function implementation
+
+Implementing a tail-recursive version of factorial:
+
+```
+@tailrec
+def factorial(n:Int, accumulator:Int): Int = 
+    if n == 1 then accumulator else factorial(n-1, n * accumulator)
+```
+
+In this function, instead of untangling all the recursiveness of factorial and then calculating the expression (which saves a lot of memory usage), we use an accumulator to store the current result as we move along. This allows for tail-recursive to kick in, that is, we use the exact function in its last call.
