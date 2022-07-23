@@ -13,16 +13,20 @@ Non-trivial programming languages provides:
 2. ways to combine expressions (ex: x = `2*y`)
 3. ways to abstract expressions (ex: `def sum()`)
 
-Functional programming ~ calculator -> REPL (Read-Eval-Print-Loop) to evaluate expressions -> for Scala type `scala`
+You can think of Functional programming as a calculator, Scala even offer its own REPL (Read-Eval-Print-Loop) to evaluate expressions, that can be accessed typing `scala`
 
-Evaluation - for non-primitive expressions:
-    1. Take the leftmost operator
-    2. Evaluate the operands (left to right)
-    3. Apply the operator to operands
+### Evaluation
 
-Named operators are replaced by its definition (ex: variable size will have its defined value)
+The Scala evaluation for nor non-primitive expressions follows the steps:
 
-The evaluation stops once it results in a value (ex: number)
+1. Take the leftmost operator
+2. Evaluate the operands (left to right)
+3. Apply the operator to operands
+4. Evaluation stops once it results in a value (ex: number)
+
+Named operators are replaced by its definition (ex: variable size, if previously defined, will have its associated value)
+
+Below, there is an example of evaluation:
 
 ```
 val x = 2
@@ -31,7 +35,7 @@ val y = 3
 3*x + y -> 3*2 + y -> 6 + y -> 6 + 3 -> 9
 ```
 
-Functions can take parameters, for example:
+Functions can also take parameters, for example:
 
 ```
 def square(x: Double) = x*x
@@ -39,9 +43,9 @@ def square(x: Double) = x*x
 def sumOfSquares(x: Double, y: Double): Double = square(x) + square(y)
 ```
 
-Functions can have a type (:Type after arguments). Types are Primitive Types (like Java) that are capitalized
+Functions can have typed arguments (:Type after arguments). Types are Primitive Types (like Java) that are capitalized.
 
-Evaluation of Parameterized Functions:
+The evaluation of Parameterized Functions follows a similar path:
 
  1. Evaluate arguments, from left to right
  2. Replace the function application by its definition (right-hand side)
@@ -60,14 +64,14 @@ square(3) + square(4)
 25
 ```
 
-This form of calculating is called Substitution model (lambda-calculus [Alonzo Church]) - evaluation focuses on reducing an expression to a value -> expressions must not have side-effects (each iteration is different) and this model is really powerful
+This form of calculating is called **Substitution model** ( also known as lambda-calculus introduced by Alonzo Church) a very powerful rationale in which **evaluation focuses on reducing an expression to a value**. For this to happen the expressions **must not have side-effects** (each iteration is different).
 
-Does every expression reduce to a value (in a finite # of steps)? No! Loop expressions won't end in a value
+So this begs the question: Does every expression reduce to a value (in a finite # of steps)? No! Loop expressions won't end in a value, for example:
 ``` 
 def loop: Int = loop
 ```
 
-We can change the evaluation strategy, that is, instead of reducing all arguments to its value before the function, we can simplify the expression (unreduced arguments) and then substitute the argument values. Example:
+We can **change the evaluation strategy**, that is, instead of reducing all arguments to its value before the function, we can **simplify the expression (unreduced arguments) and then substitute the argument values**. Example:
 
 ```
 sumOfSquares(x,y)
@@ -76,12 +80,13 @@ x*x + y*y
 9 + 16
 25
 ```
+This known as a call-by-name substitution!
 
-Evaluation Strategies:
+### Evaluation Strategies:
 
-1. Call-by-name: evaluates the expression using unreduced arguments. Only arguments that are used to calculate the final expression are evaluated
+1. **Call-by-name**: evaluates the expression using unreduced arguments. Only arguments that are used to calculate the final expression are evaluated
 
-2. Call-by-value: evaluates the expression using reduced arguments. Evaluate each argument only once
+2. **Call-by-value**: evaluates the expression using reduced arguments. Evaluate each argument only once
 
 They will both result in the same value as long as: reduced expressions consists of pure functions and the evaluation terminates
 
@@ -89,7 +94,7 @@ They will both result in the same value as long as: reduced expressions consists
 
 The CBN and CBV are evaluation techniques to reduce an expression to a value, as long as it terminates. However, they are not equivalent and can lead to different results if the termination isn't guaranteed
 
-If a CBV evaluation terminates then CBN terminates -> however the opposite isn't true. For example:
+If a **CBV evaluation terminates then CBN terminates**, however the **opposite isn't true**. For example:
 
 ```
 def first(x: Int, y: Int) = x
@@ -98,33 +103,33 @@ CBN -> x
 CBV -> loop
 ```
 
-Scala uses CBV:
+Scala uses CBV as default:
 1. CBV can avoid numerous extra reduction steps
 2. CBV is much more predictable
 
-You can use => to explicitly use CBN
+However, you can use => to explicitly use CBN, as seen below:
 
 ```
 def constOne(x:Int, y:=> Int) = 1
 ```
 
-In Scala:
-- val: evaluates the expressions immediately
-- def: evaluates the expressions when needed
+Also, in terms of definition, for Scala:
+- **val**: evaluates the expressions immediately
+- **def**: evaluates the expressions when needed
 
 ## Conditionals and Value Definitions
 
 ### Conditionals
 
-Scala has `if-then-else` for choosing between two alternatives -> used for expressions not statements
+Scala has `if-then-else` for choosing between two alternatives and it's used for expressions not statements
 
 ```
 def abs(x:Int) = if x>=0[predicate of type boolean] then x else -x
 ```
 
-In Scala: ``` true false, !b for negation, b && b for conjunction and b || b for disjunction ```
+In Scala we have: ``` true false, !b for negation, b && b for conjunction and b || b for disjunction ```
 
-Short-circuit evaluation: not always the right operand needs to be evaluated
+**Short-circuit evaluation**: expressions that don't require all the operands to be evaluated
 
 |Expression|Result|
 |:--:|:--:|
@@ -143,9 +148,9 @@ if false then e1 else e2 -> e2
 
 ### Value Definitions
 
-The def form is equivalent for CBN, it's evaluated on each use
+**The def form is equivalent for CBN**, it's evaluated on each use
 
-The val form is equivalent for CBV, it's evaluated at the point of the definition
+**The val form is equivalent for CBV**, it's evaluated at the point of the definition
 
 If an expression doesn't terminate (ex: loop): 
 ```
@@ -205,3 +210,48 @@ def isGoodEnough(guess: Double, x: Double): Boolean =
 - 0.1e-20 -> 3.16333E-11
 - 1.0e20 -> 3.1623E9
 - 1.0e50 -> 3.1623E24
+
+## Blocks and Lexical Scope
+
+In order to test our square root function we can run this command line and check if the value corresponds to the real counterpart:
+
+```
+@main def test = println(sqrt(2))
+```
+
+It's good practice to split up our function into many small components, however, notice that for `sqrtIter` we have defined functions that are useful only for the implementation itself. We can **avoid this name-space pollution by encapsulating auxiliary functions in Blocks {}**
+
+Blocks:
+ - are delimited by {}
+ - can hold a sequence of definitions/expressions
+ - are considered expressions themselves
+ - have their value defined by the last element (which can be preceded by an auxiliary function)
+
+An important note is that **definitions inside a block are visible only from within the block**. For example, we can't access `y` outside the function `sumConstant`:
+
+```
+def sumConstant(x: Int): Int = {
+    val y = 5
+    x + 5
+}
+```
+Additionally, if we have the same variable defined inside and outside a block, there will be no conflict since the inner one can be only accessed from within the block. We say the **definitions inside the block shadow the outside counterparts** 
+
+**Definitions outside a block are visible from within the block, unless they are shadowed definitions**. For example:
+
+```
+val constant: Int = 5
+def sumConstant(x: Int): Int = {
+    x + constant
+}
+```
+
+This property is really useful since we can **exclude redundant definitions of a shared argument** (example: `x` in `sqrtIter`)
+
+We can use semicolons for more than one statement per line, though not recommended:
+
+```
+val x = y+1; x*x
+```
+
+## Tail Recursion
