@@ -1,4 +1,4 @@
-# Week 1 - Functions & Evaluation
+# Week 1 Study Notes - Functions & Evaluation
 
 ## Programming Paradigms
 

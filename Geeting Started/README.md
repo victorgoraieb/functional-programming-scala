@@ -1,4 +1,4 @@
-# General Introduction
+# General Introduction Study Notes
 
 Functional Programming is becoming increasingly important in the industry
 
